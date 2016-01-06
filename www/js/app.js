@@ -31,12 +31,18 @@ angular.module('starter', ['ionic', 'firebase'])
     url: '/home',
     templateUrl: 'templates/home.html',
     controller: 'HomeCtrl'
+  })
+
+  .state('profile', {
+    url: '/profile',
+    templateUrl: 'templates/profile.html',
+    controller: 'ProfileCtrl'
   });
 
   $urlRouterProvider.otherwise('/home');
 }])
 
-.controller('HomeCtrl',['$scope', function($scope){
+.controller('HomeCtrl', ['$scope', '$state', function($scope, $state){
 
   /*
     to do:
@@ -54,6 +60,7 @@ angular.module('starter', ['ionic', 'firebase'])
       }
       else {
         console.log("DEBUG: SIGNIN SUCCESS.", authData);
+        $state.go('profile');
       }
     });
   };
@@ -68,8 +75,29 @@ angular.module('starter', ['ionic', 'firebase'])
       }
       else {
         console.log("DEBUG: SIGNIN SUCCESS.", authData);
+        $state.go('profile');
       }
     });
+  };
+
+}])
+
+.controller('ProfileCtrl', ['$scope', function($scope){
+
+  $scope.authData = null;
+
+  $scope.init = function(){
+
+    $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
+
+    if($scope.authData == null) {
+        /* display error indicating user is not logged in. */
+    }
+    else {
+      /* do a check to ensure session has not expired. */
+
+    }
+
   };
 
 }]);

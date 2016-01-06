@@ -1,12 +1,39 @@
 <ion-view view-title="Me">
   <ion-content ng-init="init();">
 
-    <div id="profile-bg"></div>
+    <div id="profile-bg">
+    </div>
+
     <div id="content">
       <div id="profile-info">
         <img id="profile-image" ng-src="{{authData[authData.provider].profileImageURL}}">
         <h3 id="profile-name">{{authData[authData.provider].displayName}}</h3>
         <span id="profile-description">Student</span>
       </div>
+
+      <!-- this will be linked to firebase -->
+      <label class="item item-input item-select">
+        <div class="input-label">
+          University
+        </div>
+        <select>
+          <option>UWI</option>
+          <option selected>UTT</option>
+          <option>COSTAATT</option>
+        </select>
+      </label>
+
+      <label class="item item-input item-select">
+        <div class="input-label">
+          Degree
+        </div>
+        <select>
+          <option>BSc. Computer Science</option>
+          <option selected>BSc. Information Technology</option>
+          <option>BSc. Economics</option>
+        </select>
+      </label>
+
+    </div>
   </ion-content>
 </ion-view>

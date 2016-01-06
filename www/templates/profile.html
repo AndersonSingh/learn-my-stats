@@ -1,0 +1,12 @@
+<ion-view view-title="Me">
+  <ion-content ng-init="init();">
+
+    <div id="profile-bg"></div>
+    <div id="content">
+      <div id="profile-info">
+        <img id="profile-image" ng-src="{{authData[authData.provider].profileImageURL}}">
+        <h3 id="profile-name">{{authData[authData.provider].displayName}}</h3>
+        <span id="profile-description">Student</span>
+      </div>
+  </ion-content>
+</ion-view>

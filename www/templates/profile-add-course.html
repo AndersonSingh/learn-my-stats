@@ -1,0 +1,42 @@
+<ion-view view-title="Add Course To Profile">
+  <ion-content ng-init="init();">
+
+    <!-- this displays a list of current courses in the system -->
+    <label class="item item-input item-select">
+      <div class="input-label">
+        Course
+      </div>
+      <select ng-model="course">
+        <option ng-repeat="(key, value) in courses">{{key}}</option>
+      </select>
+    </label>
+
+    <!-- this displays a list of grades -->
+    <label class="item item-input item-select">
+      <div class="input-label">
+        Grade
+      </div>
+      <select ng-model="grade">
+        <option ng-repeat="(key, value) in grades">{{key}}</option>
+      </select>
+    </label>
+
+    <!-- this displays the course start date -->
+    <label class="item item-input item-select">
+      <div class="input-label">
+        Course Start Date
+      </div>
+      <input ng-model="startDate" type="date">
+    </label>
+
+    <div class="padding">
+      <button class="button button-block button-positive">
+        Save
+      </button>
+      <button class="button button-block button-positive">
+        Add New Course
+      </button>
+    </div>
+
+  </ion-content>
+</ion-view>

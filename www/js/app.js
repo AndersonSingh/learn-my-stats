@@ -39,6 +39,12 @@ angular.module('starter', ['ionic', 'firebase'])
     controller: 'ProfileCtrl'
   })
 
+  .state('profile-add-course', {
+    url: '/profile-add-course',
+    templateUrl: 'templates/profile-add-course.html',
+    controller: 'CoursesCtrl'
+  })
+
   .state('add-university', {
     url: '/add-university',
     templateUrl: 'templates/add-university.html',
@@ -49,7 +55,14 @@ angular.module('starter', ['ionic', 'firebase'])
     url: '/add-degree',
     templateUrl: 'templates/add-degree.html',
     controller: 'HelperCtrl'
-  });
+  })
+
+  .state('add-course', {
+    url: '/add-course',
+    templateUrl: 'templates/add-course.html',
+    controller: 'HelperCtrl'
+  })
+  ;
 
   $urlRouterProvider.otherwise('/home');
 }])
@@ -125,6 +138,8 @@ angular.module('starter', ['ionic', 'firebase'])
     var refDegrees = new Firebase("https://learn-my-stats.firebaseio.com/degrees");
     $scope.degrees = $firebaseObject(refDegrees);
 
+    /* need to retrieve university, degree, startDate from firebase if already set. */
+
   };
 
   /* this function will save profile data to firebase. */
@@ -146,10 +161,29 @@ angular.module('starter', ['ionic', 'firebase'])
 
 }])
 
+.controller('CoursesCtrl',['$scope', '$firebaseObject', function($scope, $firebaseObject){
+
+  $scope.courses = null;
+
+  $scope.init = function(){
+
+    /* this will retrieve the list of courses from firebase */
+    var refCourses = new Firebase("https://learn-my-stats.firebaseio.com/courses");
+    $scope.courses = $firebaseObject(refCourses);
+
+    /* this will retrieve the list of grades from firebase */
+    var refGrades = new Firebase("https://learn-my-stats.firebaseio.com/grades");
+    $scope.grades = $firebaseObject(refGrades);
+
+  };
+
+}])
+
 .controller('HelperCtrl',['$scope', function($scope){
 
   $scope.university = "The University of the West Indies";
   $scope.degree = "BSc. Computer Science";
+  $scope.course = "COMP2000";
 
   $scope.addUniversity = function(university){
 
@@ -168,6 +202,14 @@ angular.module('starter', ['ionic', 'firebase'])
       "name" : degree
     });
 
+  };
+
+  $scope.addCourse = function(course){
+    var ref = new Firebase("https://learn-my-stats.firebaseio.com/courses");
+    /* since the course code is a unique key, do not need to use push. */
+    var obj = {};
+    obj[course] = true;
+    ref.update(obj);
   };
 
 }]);

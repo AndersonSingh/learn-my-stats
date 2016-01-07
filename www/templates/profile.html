@@ -16,7 +16,7 @@
         <div class="input-label">
           University
         </div>
-        <select>
+        <select ng-model="university">
           <option ng-repeat="university in universities">{{university.name}}</option>
         </select>
       </label>
@@ -26,7 +26,7 @@
         <div class="input-label">
           Degree
         </div>
-        <select>
+        <select ng-model="degree">
           <option ng-repeat="degree in degrees">{{degree.name}}</option>
         </select>
       </label>
@@ -36,13 +36,13 @@
         <div class="input-label">
           Degree Start Date
         </div>
-        <input type="date">
+        <input ng-model="startDate" type="date">
       </label>
 
 
       <div class="padding">
 
-        <button class="button button-block button-positive">
+        <button class="button button-block button-positive" ng-click="save(university, degree, startDate);">
           Save Profile
         </button>
 

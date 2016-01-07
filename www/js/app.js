@@ -97,8 +97,13 @@ angular.module('starter', ['ionic', 'firebase'])
 .controller('ProfileCtrl', ['$scope', '$firebaseObject', function($scope, $firebaseObject){
 
   $scope.authData = null;
+
   $scope.universities = null;
   $scope.degrees = null;
+
+  $scope.university = null;
+  $scope.degree = null;
+  $scope.startDate = null;
 
   $scope.init = function(){
 
@@ -120,6 +125,22 @@ angular.module('starter', ['ionic', 'firebase'])
     var refDegrees = new Firebase("https://learn-my-stats.firebaseio.com/degrees");
     $scope.degrees = $firebaseObject(refDegrees);
 
+  };
+
+  /* this function will save profile data to firebase. */
+  $scope.save = function(university, degree, startDate){
+
+    var ref = new Firebase("https://learn-my-stats.firebaseio.com/profiles/" + $scope.authData.uid);
+
+
+    startDate = JSON.stringify(startDate);
+
+    ref.update({
+      'name' : $scope.authData[$scope.authData.provider].displayName,
+      'university' : university,
+      'degree' : degree,
+      'startDate' : startDate
+    });
   };
 
 

@@ -11,28 +11,52 @@
         <span id="profile-description">Student</span>
       </div>
 
-      <!-- this will be linked to firebase -->
+
       <label class="item item-input item-select">
         <div class="input-label">
           University
         </div>
         <select>
-          <option>UWI</option>
-          <option selected>UTT</option>
-          <option>COSTAATT</option>
+          <option ng-repeat="university in universities">{{university.name}}</option>
         </select>
       </label>
+
 
       <label class="item item-input item-select">
         <div class="input-label">
           Degree
         </div>
         <select>
-          <option>BSc. Computer Science</option>
-          <option selected>BSc. Information Technology</option>
-          <option>BSc. Economics</option>
+          <option ng-repeat="degree in degrees">{{degree.name}}</option>
         </select>
       </label>
+
+
+      <label class="item item-input item-select">
+        <div class="input-label">
+          Degree Start Date
+        </div>
+        <input type="date">
+      </label>
+
+
+      <div class="padding">
+
+        <button class="button button-block button-positive">
+          Save Profile
+        </button>
+
+        <!-- might move these two buttons from profile page -->
+
+        <button class="button button-block button-positive" ui-sref="add-university">
+          Add New University
+        </button>
+
+
+        <button class="button button-block button-positive" ui-sref="add-degree">
+          Add New Degree
+        </button>
+      </div>
 
     </div>
   </ion-content>

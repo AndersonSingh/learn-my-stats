@@ -37,6 +37,18 @@ angular.module('starter', ['ionic', 'firebase'])
     url: '/profile',
     templateUrl: 'templates/profile.html',
     controller: 'ProfileCtrl'
+  })
+
+  .state('add-university', {
+    url: '/add-university',
+    templateUrl: 'templates/add-university.html',
+    controller: 'HelperCtrl'
+  })
+
+  .state('add-degree', {
+    url: '/add-degree',
+    templateUrl: 'templates/add-degree.html',
+    controller: 'HelperCtrl'
   });
 
   $urlRouterProvider.otherwise('/home');
@@ -82,9 +94,11 @@ angular.module('starter', ['ionic', 'firebase'])
 
 }])
 
-.controller('ProfileCtrl', ['$scope', function($scope){
+.controller('ProfileCtrl', ['$scope', '$firebaseObject', function($scope, $firebaseObject){
 
   $scope.authData = null;
+  $scope.universities = null;
+  $scope.degrees = null;
 
   $scope.init = function(){
 
@@ -97,6 +111,41 @@ angular.module('starter', ['ionic', 'firebase'])
       /* do a check to ensure session has not expired. */
 
     }
+
+    /* this will retrieve the list of universities from firebase. */
+    var refUniversities = new Firebase("https://learn-my-stats.firebaseio.com/universities");
+    $scope.universities = $firebaseObject(refUniversities);
+
+    /* this will retrieve the list of degrees from firebase */
+    var refDegrees = new Firebase("https://learn-my-stats.firebaseio.com/degrees");
+    $scope.degrees = $firebaseObject(refDegrees);
+
+  };
+
+
+}])
+
+.controller('HelperCtrl',['$scope', function($scope){
+
+  $scope.university = "The University of the West Indies";
+  $scope.degree = "BSc. Computer Science";
+
+  $scope.addUniversity = function(university){
+
+    var ref = new Firebase("https://learn-my-stats.firebaseio.com/universities");
+
+    ref.push({
+      "name" : university
+    });
+
+  };
+
+  $scope.addDegree = function(degree){
+    var ref = new Firebase("https://learn-my-stats.firebaseio.com/degrees");
+
+    ref.push({
+      "name" : degree
+    });
 
   };
 

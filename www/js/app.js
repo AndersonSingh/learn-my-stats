@@ -39,6 +39,12 @@ angular.module('starter', ['ionic', 'firebase'])
     controller: 'ProfileCtrl'
   })
 
+  .state('profile-courses', {
+    url: '/profile-courses',
+    templateUrl: 'templates/profile-courses.html',
+    controller: 'ProfileCoursesCtrl'
+  })
+
   .state('profile-add-course', {
     url: '/profile-add-course',
     templateUrl: 'templates/profile-add-course.html',
@@ -161,11 +167,40 @@ angular.module('starter', ['ionic', 'firebase'])
 
 }])
 
-.controller('CoursesCtrl',['$scope', '$firebaseObject', function($scope, $firebaseObject){
+.controller('ProfileCoursesCtrl',['$scope', '$firebaseObject', function($scope, $firebaseObject){
 
   $scope.courses = null;
 
   $scope.init = function(){
+
+    $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
+
+    if($scope.authData == null) {
+
+    }
+    else {
+
+    }
+
+    /* pull all courses this user has done with grade details. */
+    var ref = new Firebase("https://learn-my-stats.firebaseio.com/profile-grades/" + $scope.authData.uid);
+    $scope.courses = $firebaseObject(ref);
+  };
+
+}])
+
+.controller('CoursesCtrl',['$scope', '$firebaseObject', function($scope, $firebaseObject){
+
+  $scope.courses = null;
+  $scope.authData = null;
+
+  $scope.init = function(){
+
+    /* pass a query parameter to determine if a new course is being added or edited,
+      and then load the data in the fields.
+     */
+
+    $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
 
     /* this will retrieve the list of courses from firebase */
     var refCourses = new Firebase("https://learn-my-stats.firebaseio.com/courses");
@@ -174,6 +209,19 @@ angular.module('starter', ['ionic', 'firebase'])
     /* this will retrieve the list of grades from firebase */
     var refGrades = new Firebase("https://learn-my-stats.firebaseio.com/grades");
     $scope.grades = $firebaseObject(refGrades);
+
+  };
+
+  /* saves a course to a user profile. */
+  $scope.save = function(course, grade, startDate){
+
+    var ref = new Firebase("https://learn-my-stats.firebaseio.com/profile-grades/" + $scope.authData.uid + "/" + course);
+    startDate = JSON.stringify(startDate);
+
+    ref.set({
+      "grade" : grade,
+      "startDate" : startDate
+    });
 
   };
 

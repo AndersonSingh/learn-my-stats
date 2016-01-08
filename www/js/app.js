@@ -46,7 +46,7 @@ angular.module('starter', ['ionic', 'firebase'])
   })
 
   .state('profile-add-course', {
-    url: '/profile-add-course',
+    url: '/profile-add-course?course&grade&startDate',
     templateUrl: 'templates/profile-add-course.html',
     controller: 'CoursesCtrl'
   })
@@ -182,23 +182,33 @@ angular.module('starter', ['ionic', 'firebase'])
 
     }
 
+
     /* pull all courses this user has done with grade details. */
     var ref = new Firebase("https://learn-my-stats.firebaseio.com/profile-grades/" + $scope.authData.uid);
     $scope.courses = $firebaseObject(ref);
   };
 
+
 }])
 
-.controller('CoursesCtrl',['$scope', '$firebaseObject', function($scope, $firebaseObject){
+.controller('CoursesCtrl',['$scope', '$stateParams', '$firebaseObject', function($scope, $stateParams, $firebaseObject){
 
   $scope.courses = null;
   $scope.authData = null;
+
+  $scope.course = $stateParams.course;
+  $scope.grade = null;
+  $scope.startDate = null;
 
   $scope.init = function(){
 
     /* pass a query parameter to determine if a new course is being added or edited,
       and then load the data in the fields.
      */
+     if($scope.course !== undefined) {
+       $scope.grade = $stateParams.grade;
+       $scope.startDate = new Date(JSON.parse($stateParams.startDate));
+     }
 
     $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
 

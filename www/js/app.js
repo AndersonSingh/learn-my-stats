@@ -115,7 +115,7 @@ angular.module('starter', ['ionic', 'firebase'])
 }])
 
 .controller('HomeCtrl', ['$scope', '$state', function($scope, $state){
-
+  console.log("Launching Home Controller");
   /*
     to do:
     1. write a function to check if already signed in.
@@ -225,7 +225,7 @@ angular.module('starter', ['ionic', 'firebase'])
     });
 
     /* save alert. */
-    navigator.notification.alert('Profile Information Saved.', function(){});
+    navigator.notification.alert('Profile Information Saved.', function(){}, "Profile");
 
   };
 
@@ -291,7 +291,7 @@ angular.module('starter', ['ionic', 'firebase'])
   $scope.save = function(course, grade, startDate){
 
     if(course === null || grade === null || startDate === null){
-      navigator.notification.alert('Error: One or More Fields Left Blank.', function(){});
+      navigator.notification.alert('Error: One or More Fields Left Blank.', function(){}, "Courses");
     }
     else{
 
@@ -303,7 +303,7 @@ angular.module('starter', ['ionic', 'firebase'])
         "startDate" : startDate
       });
 
-      navigator.notification.alert('Course Added Successfully To Profile.', function(){});
+      navigator.notification.alert('Course Added Successfully To Profile.', function(){}, "Courses");
       $state.go("app.profile-courses");
     }
 
@@ -325,7 +325,7 @@ angular.module('starter', ['ionic', 'firebase'])
       "name" : university
     });
 
-    navigator.notification.alert('University Added Successfully.', function(){});
+    navigator.notification.alert('University Added Successfully.', function(){}, "University");
     $state.go("app.profile");
   };
 
@@ -336,7 +336,7 @@ angular.module('starter', ['ionic', 'firebase'])
       "name" : degree
     });
 
-    navigator.notification.alert('Degree Added Successfully.', function(){});
+    navigator.notification.alert('Degree Added Successfully.', function(){}, "Degree");
     $state.go("app.profile");
   };
 
@@ -347,7 +347,7 @@ angular.module('starter', ['ionic', 'firebase'])
     obj[course] = true;
     ref.update(obj);
 
-    navigator.notification.alert('Course Added Successfully.', function(){});
+    navigator.notification.alert('Course Added Successfully.', function(){}, "Course");
     $state.go("app.profile");
   };
 

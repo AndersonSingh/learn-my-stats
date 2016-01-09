@@ -33,44 +33,85 @@ angular.module('starter', ['ionic', 'firebase'])
     controller: 'HomeCtrl'
   })
 
-  .state('profile', {
+
+  .state('app', {
+    url: '/app',
+    abstract: true,
+    templateUrl: 'templates/menu.html',
+    controller: 'AppCtrl'
+  })
+
+  .state('app.profile', {
     url: '/profile',
-    templateUrl: 'templates/profile.html',
-    controller: 'ProfileCtrl'
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/profile.html',
+        controller: 'ProfileCtrl'
+      }
+    }
   })
 
-  .state('profile-courses', {
+  .state('app.profile-courses', {
     url: '/profile-courses',
-    templateUrl: 'templates/profile-courses.html',
-    controller: 'ProfileCoursesCtrl'
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/profile-courses.html',
+        controller: 'ProfileCoursesCtrl'
+      }
+    }
   })
 
-  .state('profile-add-course', {
+  .state('app.profile-add-course', {
     url: '/profile-add-course?course&grade&startDate',
-    templateUrl: 'templates/profile-add-course.html',
-    controller: 'CoursesCtrl'
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/profile-add-course.html',
+        controller: 'CoursesCtrl'
+      }
+    }
   })
 
-  .state('add-university', {
+  .state('app.add-university', {
     url: '/add-university',
-    templateUrl: 'templates/add-university.html',
-    controller: 'HelperCtrl'
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/add-university.html',
+        controller: 'HelperCtrl'
+      }
+    }
   })
 
-  .state('add-degree', {
+  .state('app.add-degree', {
     url: '/add-degree',
-    templateUrl: 'templates/add-degree.html',
-    controller: 'HelperCtrl'
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/add-degree.html',
+        controller: 'HelperCtrl'
+      }
+    }
   })
 
-  .state('add-course', {
+  .state('app.add-course', {
     url: '/add-course',
-    templateUrl: 'templates/add-course.html',
-    controller: 'HelperCtrl'
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/add-course.html',
+        controller: 'HelperCtrl'
+      }
+    }
   })
   ;
 
   $urlRouterProvider.otherwise('/home');
+}])
+
+.controller('AppCtrl', ['$scope', '$state', function($scope, $state){
+
+  $scope.signOut = function(){
+    localStorage.removeItem('firebase:session::learn-my-stats');
+    $state.go('home');
+  };
+
 }])
 
 .controller('HomeCtrl', ['$scope', '$state', function($scope, $state){
@@ -80,6 +121,14 @@ angular.module('starter', ['ionic', 'firebase'])
     1. write a function to check if already signed in.
     2. write a function to sign out a user.
   */
+
+  $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
+
+  /* user logged in. */
+  if($scope.authData !== null){
+    $state.go('app.profile');
+  }
+
 
   /* function to sign the user in via facebook. */
   $scope.signInFB = function(){
@@ -91,7 +140,7 @@ angular.module('starter', ['ionic', 'firebase'])
       }
       else {
         console.log("DEBUG: SIGNIN SUCCESS.", authData);
-        $state.go('profile');
+        $state.go('app.profile');
       }
     });
   };
@@ -106,7 +155,7 @@ angular.module('starter', ['ionic', 'firebase'])
       }
       else {
         console.log("DEBUG: SIGNIN SUCCESS.", authData);
-        $state.go('profile');
+        $state.go('app.profile');
       }
     });
   };
@@ -145,6 +194,18 @@ angular.module('starter', ['ionic', 'firebase'])
     $scope.degrees = $firebaseObject(refDegrees);
 
     /* need to retrieve university, degree, startDate from firebase if already set. */
+    var refUser = new Firebase("https://learn-my-stats.firebaseio.com/profiles/" + $scope.authData.uid);
+
+    var userData = $firebaseObject(refUser);
+
+    /* load the user data for display. */
+    userData.$loaded().then(function() {
+      $scope.university = userData.university;
+      $scope.degree = userData.degree;
+      $scope.startDate = new Date(JSON.parse(userData.startDate));
+      });
+
+
 
   };
 
@@ -162,6 +223,10 @@ angular.module('starter', ['ionic', 'firebase'])
       'degree' : degree,
       'startDate' : startDate
     });
+
+    /* save alert. */
+    navigator.notification.alert('Profile Information Saved.', function(){});
+
   };
 
 
@@ -191,7 +256,7 @@ angular.module('starter', ['ionic', 'firebase'])
 
 }])
 
-.controller('CoursesCtrl',['$scope', '$stateParams', '$firebaseObject', function($scope, $stateParams, $firebaseObject){
+.controller('CoursesCtrl',['$scope', '$stateParams', '$state', '$firebaseObject', function($scope, $stateParams, $state, $firebaseObject){
 
   $scope.courses = null;
   $scope.authData = null;
@@ -225,13 +290,22 @@ angular.module('starter', ['ionic', 'firebase'])
   /* saves a course to a user profile. */
   $scope.save = function(course, grade, startDate){
 
-    var ref = new Firebase("https://learn-my-stats.firebaseio.com/profile-grades/" + $scope.authData.uid + "/" + course);
-    startDate = JSON.stringify(startDate);
+    if(course === null || grade === null || startDate === null){
+      navigator.notification.alert('Error: One or More Fields Left Blank.', function(){});
+    }
+    else{
 
-    ref.set({
-      "grade" : grade,
-      "startDate" : startDate
-    });
+      var ref = new Firebase("https://learn-my-stats.firebaseio.com/profile-grades/" + $scope.authData.uid + "/" + course);
+      startDate = JSON.stringify(startDate);
+
+      ref.set({
+        "grade" : grade,
+        "startDate" : startDate
+      });
+
+      navigator.notification.alert('Course Added Successfully To Profile.', function(){});
+      $state.go("app.profile-courses");
+    }
 
   };
 
@@ -251,6 +325,8 @@ angular.module('starter', ['ionic', 'firebase'])
       "name" : university
     });
 
+    navigator.notification.alert('University Added Successfully.', function(){});
+    $state.go("app.profile");
   };
 
   $scope.addDegree = function(degree){
@@ -260,6 +336,8 @@ angular.module('starter', ['ionic', 'firebase'])
       "name" : degree
     });
 
+    navigator.notification.alert('Degree Added Successfully.', function(){});
+    $state.go("app.profile");
   };
 
   $scope.addCourse = function(course){
@@ -268,6 +346,9 @@ angular.module('starter', ['ionic', 'firebase'])
     var obj = {};
     obj[course] = true;
     ref.update(obj);
+
+    navigator.notification.alert('Course Added Successfully.', function(){});
+    $state.go("app.profile");
   };
 
 }]);

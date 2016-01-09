@@ -26,19 +26,27 @@ angular.module('starter', ['ionic', 'firebase'])
 .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider){
 
   $stateProvider
-
-  .state('home', {
-    url: '/home',
-    templateUrl: 'templates/home.html',
-    controller: 'HomeCtrl'
+  .state('login', {
+    url: '/login',
+    templateUrl: 'templates/login.html',
+    controller: 'LoginCtrl'
   })
-
 
   .state('app', {
     url: '/app',
     abstract: true,
     templateUrl: 'templates/menu.html',
     controller: 'AppCtrl'
+  })
+
+  .state('app.home', {
+    url: '/home',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/home.html',
+        controller: 'HomeCtrl'
+      }
+    }
   })
 
   .state('app.profile', {
@@ -102,33 +110,60 @@ angular.module('starter', ['ionic', 'firebase'])
   })
   ;
 
-  $urlRouterProvider.otherwise('/home');
+  $urlRouterProvider.otherwise('/app/home');
 }])
 
 .controller('AppCtrl', ['$scope', '$state', function($scope, $state){
 
   $scope.signOut = function(){
     localStorage.removeItem('firebase:session::learn-my-stats');
-    $state.go('home');
+    $state.go('login');
   };
+}])
+
+.controller("HomeCtrl", ['$scope', '$firebaseObject', '$state', function($scope, $firebaseObject, $state){
+
+  $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
+  if($scope.authData == null) {
+    /* display error indicating user is not logged in. */
+    console.log("User not logged in, redirecting to home/login screen");
+    $state.go('login');
+    return;
+  }
+
+  var refUser = new Firebase("https://learn-my-stats.firebaseio.com/profiles/" + $scope.authData.uid);
+
+  $scope.init = function() {
+    var userData = $firebaseObject(refUser);
+
+    /* load the user data for display. */
+    userData.$loaded().then(function () {
+      $scope.university = userData.university;
+      $scope.degree = userData.degree;
+      $scope.startDate = new Date(JSON.parse(userData.startDate));
+    });
+  };
+
+  $scope.goCourse = function(){
+    $state.go("app.profile-courses");
+  };
+
+  $scope.goProfile = function(){
+    $state.go("app.profile");
+  }
+
 
 }])
 
-.controller('HomeCtrl', ['$scope', '$state', function($scope, $state){
-  console.log("Launching Home Controller");
-  /*
-    to do:
-    1. write a function to check if already signed in.
-    2. write a function to sign out a user.
-  */
+.controller('LoginCtrl', ['$scope', '$state', function($scope, $state){
 
   $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
 
-  /* user logged in. */
+  /* user is logged in. */
   if($scope.authData !== null){
+    console.log("User was logged in previously");
     $state.go('app.profile');
   }
-
 
   /* function to sign the user in via facebook. */
   $scope.signInFB = function(){
@@ -160,29 +195,34 @@ angular.module('starter', ['ionic', 'firebase'])
     });
   };
 
+  $scope.signOut = function(){
+    localStorage.removeItem('firebase:session::learn-my-stats');
+    $state.go('login');
+  };
+
 }])
 
-.controller('ProfileCtrl', ['$scope', '$firebaseObject', function($scope, $firebaseObject){
+.controller('ProfileCtrl', ['$scope', '$firebaseObject', '$state', function($scope, $firebaseObject, $state){
+
+  console.log("Logged In");
 
   $scope.authData = null;
-
   $scope.universities = null;
   $scope.degrees = null;
-
   $scope.university = null;
   $scope.degree = null;
   $scope.startDate = null;
 
   $scope.init = function(){
-
     $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
-
     if($scope.authData == null) {
         /* display error indicating user is not logged in. */
+      console.log("User not logged in, redirecting to home/login screen");
+      $state.go('login');
+      return;
     }
     else {
-      /* do a check to ensure session has not expired. */
-
+      /* TODO do a check to ensure session has not expired. */
     }
 
     /* this will retrieve the list of universities from firebase. */
@@ -204,16 +244,12 @@ angular.module('starter', ['ionic', 'firebase'])
       $scope.degree = userData.degree;
       $scope.startDate = new Date(JSON.parse(userData.startDate));
       });
-
-
-
   };
 
   /* this function will save profile data to firebase. */
   $scope.save = function(university, degree, startDate){
 
     var ref = new Firebase("https://learn-my-stats.firebaseio.com/profiles/" + $scope.authData.uid);
-
 
     startDate = JSON.stringify(startDate);
 

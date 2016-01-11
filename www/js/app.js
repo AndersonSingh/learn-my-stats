@@ -69,8 +69,38 @@ angular.module('starter', ['ionic', 'firebase'])
     }
   })
 
+  .state('app.add-course-assessment', {
+    url: '/add-course-assessment',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/add-course-assessment.html',
+        controller : 'AssessmentsCtrl'
+      }
+    }
+  })
+
+  .state('app.view-course-assessments', {
+    url: '/view-course-assessments?course',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/view-course-assessments.html',
+        controller : 'AssessmentsCtrl'
+      }
+    }
+  })
+
+  .state('app.edit-course-assessment', {
+    url: '/edit-course-assessment?assessmentId&course&assessmentType&grade',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/edit-course-assessment.html',
+        controller : 'AssessmentsCtrl'
+      }
+    }
+  })
+
   .state('app.profile-add-course', {
-    url: '/profile-add-course?course&grade&startDate',
+    url: '/profile-add-course?course&grade&startDate&edit',
     views: {
       'menuContent': {
         templateUrl: 'templates/profile-add-course.html',
@@ -300,6 +330,7 @@ angular.module('starter', ['ionic', 'firebase'])
   $scope.course = $stateParams.course;
   $scope.grade = null;
   $scope.startDate = null;
+  $scope.edit = false;
 
   $scope.init = function(){
 
@@ -309,6 +340,11 @@ angular.module('starter', ['ionic', 'firebase'])
      if($scope.course !== undefined) {
        $scope.grade = $stateParams.grade;
        $scope.startDate = new Date(JSON.parse($stateParams.startDate));
+     }
+
+     /* addition of assessments needed to add this. */
+     if($stateParams.edit !== undefined){
+      $scope.edit = $stateParams.edit;  
      }
 
     $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
@@ -342,6 +378,79 @@ angular.module('starter', ['ionic', 'firebase'])
       navigator.notification.alert('Course Added Successfully To Profile.', function(){}, "Courses");
       $state.go("app.profile-courses");
     }
+
+  };
+
+}])
+
+.controller('AssessmentsCtrl', ['$scope', '$firebaseObject', '$stateParams', function($scope, $firebaseObject, $stateParams){
+
+  $scope.authData = null;
+  $scope.grade = null;
+  $scope.grades = null;
+  $scope.course = null;
+  $scope.courses = null;
+  $scope.assessmentTypes = null;
+  $scope.assessments = null;
+  $scope.assessmentId = null ;
+
+  $scope.view_init = function(){
+
+    $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
+
+    /* get course id from stateParams */
+    $scope.course = $stateParams.course;
+    console.log($scope.course);
+    var refCourseAssessments = new Firebase("https://learn-my-stats.firebaseio.com/profile-grades/" + $scope.authData.uid + "/" + $scope.course + "/assessments");
+    $scope.assessments = $firebaseObject(refCourseAssessments);
+
+  };
+
+  /* used by both edit / add assessment. */
+  $scope.init = function(){
+
+    $scope.authData = JSON.parse(localStorage.getItem('firebase:session::learn-my-stats'));
+
+    /* get the list of courses. */
+    var refCourses = new Firebase("https://learn-my-stats.firebaseio.com/courses");
+    $scope.courses = $firebaseObject(refCourses);
+
+    /* get the list of grades. */
+    var refGrades = new Firebase("https://learn-my-stats.firebaseio.com/grades");
+    $scope.grades = $firebaseObject(refGrades);
+
+    /* get the list of assessment types. */
+    var assessmentTypes = new Firebase("https://learn-my-stats.firebaseio.com/assessment-types");
+    $scope.assessmentTypes = $firebaseObject(assessmentTypes);
+
+    /* if stateparm for assessment id is set, populate the already selected options. */
+    if($stateParams.assessmentId !== undefined){
+      $scope.assessmentId = $stateParams.assessmentId;
+      $scope.assessmentType = $stateParams.assessmentType;
+      $scope.course = $stateParams.course;
+      $scope.grade = $stateParams.grade;
+    }
+
+  };
+
+  $scope.save = function(course, assessmentType, grade){
+    var ref = new Firebase("https://learn-my-stats.firebaseio.com/profile-grades/" + $scope.authData.uid + "/" + course + "/assessments");
+
+    ref.push({
+      assessmentType : assessmentType,
+      grade : grade
+    });
+
+  };
+
+  $scope.edit = function(course, key, assessmentType, grade){
+    var ref = new Firebase("https://learn-my-stats.firebaseio.com/profile-grades/" + $scope.authData.uid + "/" + course + "/assessments/" + key);
+    ref.update({
+      assessmentType : assessmentType,
+      grade : grade
+    });
+
+    navigator.notification.alert('Assessment Edited Successfully.', function(){}, "Assessment");
 
   };
 

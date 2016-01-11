@@ -4,7 +4,7 @@
       <div ng-repeat="(key, value) in courses" class="item item-button-right">
         <h2>Course Code: {{key}}</h2>
         <p> Grade: {{value.grade}} </p>
-        <button class="button button-positive" ui-sref="app.profile-add-course({course : key, grade : value.grade, startDate : value.startDate})">
+        <button class="button button-positive" ui-sref="app.profile-add-course({course : key, grade : value.grade, startDate : value.startDate, edit : true})">
           <i class="icon ion-edit"></i>
         </button>
       </div>

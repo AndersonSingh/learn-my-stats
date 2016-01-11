@@ -1,4 +1,4 @@
-<ion-view view-title="Add Course To Profile">
+<ion-view view-title="Add/Edit Course To Profile">
   <ion-content ng-init="init();">
 
     <!-- this displays a list of current courses in the system -->
@@ -30,6 +30,9 @@
     </label>
 
     <div class="padding">
+      <button class="button button-block button-positive" ng-hide="!edit" ui-sref="app.view-course-assessments({course : course})">
+        View Assessments
+      </button>
       <button class="button button-block button-positive" ng-click="save(course, grade, startDate);">
         Save
       </button>

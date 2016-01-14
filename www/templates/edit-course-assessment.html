@@ -3,15 +3,6 @@
 
     <label class="item item-input item-select">
       <div class="input-label">
-        Course
-      </div>
-      <select ng-model="course">
-        <option ng-repeat="(key, value) in courses">{{key}}</option>
-      </select>
-    </label>
-
-    <label class="item item-input item-select">
-      <div class="input-label">
         Assessment Type
       </div>
       <select ng-model="assessmentType">
@@ -30,7 +21,7 @@
     </label>
 
     <div class="padding">
-      <button class="button button-block button-positive" ng-click="edit(course, assessmentId, assessmentType, grade);">
+      <button class="button button-block button-positive" ng-click="edit(key, assessmentId, assessmentType, grade);">
         Save
       </button>
     </div>

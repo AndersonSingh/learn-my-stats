@@ -138,6 +138,16 @@ angular.module('starter', ['ionic', 'firebase'])
       }
     }
   })
+
+    .state('app.about', {
+      url: '/about',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/about.html',
+          controller: 'AboutCtrl'
+        }
+      }
+    })
   ;
 
   $urlRouterProvider.otherwise('/app/home');
@@ -149,6 +159,10 @@ angular.module('starter', ['ionic', 'firebase'])
     localStorage.removeItem('firebase:session::learn-my-stats');
     $state.go('login');
   };
+}])
+
+.controller("AboutCtrl", [function(){
+  console.log("About Controller Executed")
 }])
 
 .controller("HomeCtrl", ['$scope', '$firebaseObject', '$state', function($scope, $firebaseObject, $state){
@@ -272,27 +286,40 @@ angular.module('starter', ['ionic', 'firebase'])
       $scope.university = userData.university;
       $scope.degree = userData.degree;
       $scope.startDate = new Date(JSON.parse(userData.startDate));
-      });
+      $scope.reminderPeriod = userData.period || "Monthly";
+      var dTemp = new Date();
+      if (userData.time){
+        dTemp = new Date(2015, 01, 01, userData.time.hour, userData.time.minute)
+      }
+      $scope.reminderTime = dTemp;
+    });
   };
 
   /* this function will save profile data to firebase. */
-  $scope.save = function(university, degree, startDate){
+  $scope.save = function(university, degree, startDate,reminderPeriod, reminderTime){
 
     var ref = new Firebase("https://learn-my-stats.firebaseio.com/profiles/" + $scope.authData.uid);
 
     startDate = JSON.stringify(startDate);
+    reminder = {
+      hour: reminderTime.getHours(),
+      minute: reminderTime.getMinutes()
+    };
 
     ref.update({
       'name' : $scope.authData[$scope.authData.provider].displayName,
       'university' : university,
       'degree' : degree,
-      'startDate' : startDate
+      'startDate' : startDate,
+      'time' : reminder,
+      'period' : reminderPeriod
     });
 
     /* save alert. */
-    navigator.notification.alert('Profile Information Saved.', function(){
-      $state.go("app.home");
-    }, "Profile");
+    if (navigator.notification && navigator.notification.alert)
+      navigator.notification.alert('Profile Information Saved.', function(){
+        $state.go("app.home");
+      }, "Profile");
 
   };
 

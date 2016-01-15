@@ -161,9 +161,8 @@ angular.module('starter', ['ionic', 'firebase'])
     return;
   }
 
-  var refUser = new Firebase("https://learn-my-stats.firebaseio.com/profiles/" + $scope.authData.uid);
-
   $scope.init = function() {
+    var refUser = new Firebase("https://learn-my-stats.firebaseio.com/profiles/" + $scope.authData.uid);
     var userData = $firebaseObject(refUser);
 
     /* load the user data for display. */
@@ -291,7 +290,9 @@ angular.module('starter', ['ionic', 'firebase'])
     });
 
     /* save alert. */
-    navigator.notification.alert('Profile Information Saved.', function(){}, "Profile");
+    navigator.notification.alert('Profile Information Saved.', function(){
+      $state.go("app.home");
+    }, "Profile");
 
   };
 

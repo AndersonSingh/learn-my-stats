@@ -508,21 +508,26 @@ angular.module('starter', ['ionic', 'firebase'])
 
 .controller('HelperCtrl',['$scope', function($scope){
 
-  $scope.university = "The University of the West Indies";
-  $scope.degree = "BSc. Computer Science";
-  $scope.course = "COMP2000";
+  //$scope.university = "The University of the West Indies";
+  //$scope.degree = "BSc. Computer Science";
+  //$scope.course = "COMP2000";
 
   $scope.addUniversity = function(university){
 
+    if (university.length < 3){
+      navigator.notification.alert("Invalid Name", function(){}, "University")
+    }
     var ref = new Firebase("https://learn-my-stats.firebaseio.com/universities");
 
     ref.push({
       "name" : university
     });
+    if (navigator.notification && navigator.notification.alert){
+      navigator.notification.alert('University Added Successfully.', function(){}, "University");
+        $state.go("app.profile");
+      };
+    }
 
-    navigator.notification.alert('University Added Successfully.', function(){}, "University");
-    $state.go("app.profile");
-  };
 
   $scope.addDegree = function(degree){
     var ref = new Firebase("https://learn-my-stats.firebaseio.com/degrees");

@@ -4,7 +4,8 @@
 node_modules/
 platforms/
 plugins/
-resources/
+resources/android
+resources/ios
 .idea
 
 *.log
